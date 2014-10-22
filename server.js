@@ -1,7 +1,10 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var Beer = require('./models/beer');
+var beerController = require('./controllers/beer');
+var userController = require('./controllers/user');
+var passport = require('passport');
+var authController = require('./controllers/auth');
 
 mongoose.connect('mongodb://localhost:27017/beerlocker');
 
@@ -11,80 +14,27 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-var port = process.env.PORT || 3000;
+app.use(passport.initialize());
 
 var router = express.Router();
 
-router.get('/', function(req, res) {
-  res.json({ message: 'You are running dangerously low on beer!' });
-});
+//START ROUTES
 
-//POST BEER
+router.route('/users')
+  .post(userController.postUsers)
+  .get(authController.isAuthenticated, userController.getUsers);
 
-var beersRoute = router.route('/beers');
-beersRoute.post(function(req, res) {
-  var beer = new Beer();
-  beer.name = req.body.name;
-  beer.type = req.body.type;
-  beer.quantity = req.body.quantity;
+router.route('/beers')
+  .post(authController.isAuthenticated, beerController.postBeers)
+  .get(authController.isAuthenticated, beerController.getBeers);
 
-  beer.save(function(err) {
-    if (err)
-      res.send(err);
-    res.json({ message: 'Beer added to the locker!', data: beer });
-  });
-});
-
-
-//GET BEERS
-beersRoute.get(function(req, res) {
-
-  Beer.find(function(err, beers) {
-    if (err)
-        res.send(err);
-      res.json(beers);
-  });
-});
-
-//GET BEER
-var beerRoute = router.route('/beers/:beer_id');
-
-beerRoute.get(function(req, res) {
-  Beer.findById(req.params.beer_id, function(err, beer) {
-    if (err)
-      res.send(err);
-    res.json(beer);
-  });
-});
-
-//PUT BEER
-beerRoute.put(function(req, res) {
-  Beer.findById(req.params.beer_id, function(err, beer) {
-    if (err)
-      res.send(err);
-    beer.quantity = req.body.quantity;
-    beer.save(function(err) {
-      if (err)
-        res.send(err);
-      res.json(beer);
-    });
-  });
-});
-
-//DELETE BEER
-beerRoute.delete(function(req, res) {
-  Beer.findByIdAndRemove(req.params.beer_id, function(err) {
-    if (err)
-      res.send(err);
-    res.json({ message: 'Beer removed from Locker!' });
-  });
-});
+router.route('/beers/:beer_id')
+  .get(authController.isAuthenticated, beerController.getBeer)
+  .put(authController.isAuthenticated, beerController.putBeer)
+  .delete(authController.isAuthenticated, beerController.deleteBeer);
 
 //END ROUTES
 
 app.use('/api', router);
 
-app.listen(port);
-console.log('Insert beer on port ' + port);
-
-
+app.listen(3000);
