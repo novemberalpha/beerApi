@@ -17,14 +17,19 @@ exports.postBeers = function(req, res) {
     if (err)
       res.send(err);
 
-    res.json({ message: 'Beer added to the locker!', data: beer });
+    res.json({
+      message: 'Beer added to the locker!',
+      data: beer
+    });
   });
 };
 
 // Create endpoint /api/beers for GET
 exports.getBeers = function(req, res) {
   // Use the Beer model to find all beer
-  Beer.find({ userId: req.user._id }, function(err, beers) {
+  Beer.find({
+    userId: req.user._id
+  }, function(err, beers) {
     if (err)
       res.send(err);
 
@@ -35,7 +40,10 @@ exports.getBeers = function(req, res) {
 // Create endpoint /api/beers/:beer_id for GET
 exports.getBeer = function(req, res) {
   // Use the Beer model to find a specific beer
-  Beer.findById({ userId: req.user._id, _id: req.params.beer_id }, function(err, beer) {
+  Beer.findById({
+    userId: req.user._id,
+    _id: req.params.beer_id
+  }, function(err, beer) {
     if (err)
       res.send(err);
 
@@ -46,7 +54,10 @@ exports.getBeer = function(req, res) {
 // Create endpoint /api/beers/:beer_id for PUT
 exports.putBeer = function(req, res) {
   // Use the Beer model to find a specific beer
-  Beer.findById({ userId: req.user._id, _id: req.params.beer_id }, function(err, beer) {
+  Beer.findById({
+    userId: req.user._id,
+    _id: req.params.beer_id
+  }, function(err, beer) {
     if (err)
       res.send(err);
 
@@ -66,10 +77,15 @@ exports.putBeer = function(req, res) {
 // Create endpoint /api/beers/:beer_id for DELETE
 exports.deleteBeer = function(req, res) {
   // Use the Beer model to find a specific beer and remove it
-  Beer.findByIdAndRemove({ userId: req.user._id, _id: req.params.beer_id }, function(err) {
+  Beer.findByIdAndRemove({
+    userId: req.user._id,
+    _id: req.params.beer_id
+  }, function(err) {
     if (err)
       res.send(err);
 
-    res.json({ message: 'Beer removed from the locker!' });
+    res.json({
+      message: 'Beer removed from the locker!'
+    });
   });
 };

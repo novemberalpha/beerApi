@@ -10,9 +10,10 @@
 
     <form action="/api/v1/oauth2/authorize" method="post">
       <input name="transaction_id" type="hidden" value="<%= transactionID %>">
+      <input type='hidden' name='_csrf' value=_csrf>
       <div>
-      <input type="submit" value="Allow" id="allow">
-      <input type="submit" value="Deny" name="cancel" id="deny">
+        <input type="submit" value="Allow" id="allow">
+        <input type="submit" value="Deny" name="cancel" id="deny">
       </div>
     </form>
 

@@ -26,8 +26,12 @@ server.serializeClient(function(client, callback) {
 });
 
 server.deserializeClient(function(id, callback) {
-  Client.findOne({ _id: id }, function (err, client) {
-    if (err) { return callback(err); }
+  Client.findOne({
+    _id: id
+  }, function(err, client) {
+    if (err) {
+      return callback(err);
+    }
     return callback(null, client);
   });
 });
@@ -57,7 +61,9 @@ server.grant(oauth2orize.grant.code(function(client, redirectUri, user, ares, ca
 
   // Save the auth code and check for errors
   code.save(function(err) {
-    if (err) { return callback(err); }
+    if (err) {
+      return callback(err);
+    }
 
     callback(null, code.value);
   });
@@ -70,15 +76,27 @@ server.grant(oauth2orize.grant.code(function(client, redirectUri, user, ares, ca
 // code.
 
 server.exchange(oauth2orize.exchange.code(function(client, code, redirectUri, callback) {
-  Code.findOne({ value: code }, function (err, authCode) {
-    if (err) { return callback(err); }
-    if (authCode === undefined) { return callback(null, false); }
-    if (client._id.toString() !== authCode.clientId) { return callback(null, false); }
-    if (redirectUri !== authCode.redirectUri) { return callback(null, false); }
+  Code.findOne({
+    value: code
+  }, function(err, authCode) {
+    if (err) {
+      return callback(err);
+    }
+    if (authCode === undefined) {
+      return callback(null, false);
+    }
+    if (client._id.toString() !== authCode.clientId) {
+      return callback(null, false);
+    }
+    if (redirectUri !== authCode.redirectUri) {
+      return callback(null, false);
+    }
 
     // Delete auth code now that it has been used
-    authCode.remove(function (err) {
-      if(err) { return callback(err); }
+    authCode.remove(function(err) {
+      if (err) {
+        return callback(err);
+      }
 
       // Create a new access token
       var token = new Token({
@@ -88,8 +106,10 @@ server.exchange(oauth2orize.exchange.code(function(client, code, redirectUri, ca
       });
 
       // Save the access token and check for errors
-      token.save(function (err) {
-        if (err) { return callback(err); }
+      token.save(function(err) {
+        if (err) {
+          return callback(err);
+        }
 
         callback(null, token);
       });
@@ -116,14 +136,22 @@ server.exchange(oauth2orize.exchange.code(function(client, code, redirectUri, ca
 exports.authorization = [
   server.authorization(function(clientId, redirectUri, callback) {
 
-    Client.findOne({ id: clientId }, function (err, client) {
-      if (err) { return callback(err); }
+    Client.findOne({
+      id: clientId
+    }, function(err, client) {
+      if (err) {
+        return callback(err);
+      }
 
       return callback(null, client, redirectUri);
     });
   }),
-  function(req, res){
-    res.render('dialog', { transactionID: req.oauth2.transactionID, user: req.user, client: req.oauth2.client });
+  function(req, res) {
+    res.render('dialog', {
+      transactionID: req.oauth2.transactionID,
+      user: req.user,
+      client: req.oauth2.client
+    });
   }
 ]
 
@@ -160,10 +188,10 @@ exports.token = [
  * @return {String}
  * @api private
  */
-function uid (len) {
-  var buf = []
-    , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    , charlen = chars.length;
+function uid(len) {
+  var buf = [],
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+    charlen = chars.length;
 
   for (var i = 0; i < len; ++i) {
     buf.push(chars[getRandomInt(0, charlen - 1)]);
@@ -184,4 +212,3 @@ function uid (len) {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
