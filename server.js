@@ -6,6 +6,7 @@ var ejs = require('ejs');
 var session = require('express-session');
 var csrf = require('csurf');
 var helmet = require('helmet');
+var compression = require('compression');
 
 var beerController = require('./controllers/beer');
 var userController = require('./controllers/user');
@@ -53,7 +54,6 @@ app.use(helmet.csp({
 }));
 
 
-//HELMET SECURITY SECTION
 app.use(helmet.xssFilter());
 app.use(helmet.xframe());
 // Won't work until on SSL HTTPS
@@ -71,6 +71,7 @@ app.use(helmet.crossdomain({
   caseSensitive: true
 }));
 
+app.use(compression());
 
 app.use(passport.initialize());
 
